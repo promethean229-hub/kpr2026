@@ -13,6 +13,7 @@
         body { font-family: 'Inter', sans-serif; }
         .animate-in { animation: fadeIn 0.5s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .ruler-bg { background-image: repeating-linear-gradient(90deg, #94a3b8 0px, #94a3b8 1px, transparent 1px, transparent 10px); }
     </style>
 </head>
 <body class="bg-slate-50">
@@ -21,7 +22,6 @@
     <script type="text/babel">
         const { useState } = React;
 
-        // Inline Lucide-like Icons for zero dependencies
         const Icon = ({ name }) => {
             const icons = {
                 beaker: <path d="M4.5 3h15M6 3v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3M6 14h12" />,
@@ -30,8 +30,8 @@
                 check: <polyline points="20 6 9 17 4 12" />,
                 refresh: <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />,
                 book: <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5v-15z" />,
-                waves: <path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" />,
-                edit: <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                waves: <path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" />,
+                ruler: <path d="M21.3 15.3l-5-5L3.7 23l5 5 12.6-12.7z M7.5 19.5l-1-1 M10.5 16.5l-1-1 M13.5 13.5l-1-1" />
             };
             return (
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -44,28 +44,16 @@
             const [step, setStep] = useState(0);
             const [selectedTools, setSelectedTools] = useState([]);
             const [observations, setObservations] = useState([]);
+            const [measured, setMeasured] = useState(false);
             const [secondPropertyObs, setSecondPropertyObs] = useState(null);
 
             const tools = [
-                { id: 'vessels', name: 'набір сполучених посудин різної форми', correct: true },
+                { id: 'vessels', name: 'набір сполучених посудин', correct: true },
                 { id: 'water', name: 'вода (підфарбована)', correct: true },
-                { id: 'oil', name: 'олія (рідина іншої густини)', correct: true },
-                { id: 'ruler', name: 'лінійка', correct: true },
+                { id: 'oil', name: 'олія', correct: true },
+                { id: 'ruler', name: 'лінійка (для вимірювання висоти)', correct: true },
                 { id: 'stopwatch', name: 'секундомір', correct: false },
-                { id: 'thermometer', name: 'термометр', correct: false },
-                { id: 'rubber_tube', name: 'гумова трубка для з’єднання', correct: true }
-            ];
-
-            const observationSteps = [
-                { id: 'level', text: 'Рівень однорідної рідини в усіх посудинах однаковий.' },
-                { id: 'shape', text: 'Рівень не залежить від форми та площі перерізу посудин.' }
-            ];
-
-            const examples = [
-                { name: 'Чайник', desc: 'Носик та корпус — це сполучені посудини.' },
-                { name: 'Водогін', desc: 'Водонапірна башта вище за будинки.' },
-                { name: 'Шлюзи', desc: 'Рівні річок для суден.' },
-                { name: 'Криниця', desc: 'Природний тиск води.' }
+                { id: 'thermometer', name: 'термометр', correct: false }
             ];
 
             const toggleTool = (tool) => {
@@ -77,15 +65,7 @@
             };
 
             const handleReset = () => {
-                setStep(0); setSelectedTools([]); setObservations([]); setSecondPropertyObs(null);
-            };
-
-            const getGrade = () => {
-                const correctToolsCount = selectedTools.filter(id => tools.find(t => t.id === id && t.correct)).length;
-                const score = (correctToolsCount * 1.5) + (observations.length * 2) + (secondPropertyObs?.correct ? 3 : 0);
-                if (score >= 12) return "Відмінно!";
-                if (score >= 8) return "Добре";
-                return "Спробуй ще";
+                setStep(0); setSelectedTools([]); setObservations([]); setSecondPropertyObs(null); setMeasured(false);
             };
 
             return (
@@ -108,20 +88,13 @@
                             {step === 0 && (
                                 <div className="space-y-4 animate-in">
                                     <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800 uppercase text-sm tracking-wider">
-                                        <Icon name="book" /> Вступ
+                                        <Icon name="book" /> Мета роботи
                                     </h2>
                                     <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 text-sm leading-relaxed text-slate-700">
-                                        <strong>Сполучені посудини</strong> — це посудини, з'єднані між собою так, що рідина вільно перетікає між ними.
-                                    </div>
-                                    <div className="grid grid-cols-1 gap-2">
-                                        {examples.map(ex => (
-                                            <div key={ex.name} className="p-3 border border-slate-100 rounded-lg bg-slate-50 text-sm">
-                                                <span className="font-bold text-blue-800">{ex.name}</span> — {ex.desc}
-                                            </div>
-                                        ))}
+                                        Дослідити рівні однакових та різних рідин у сполучених посудинах та встановити математичну залежність між їх висотами та густинами.
                                     </div>
                                     <button onClick={() => setStep(1)} className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 active:scale-95 transition-all shadow-md mt-2">
-                                        Почати дослідження
+                                        Підібрати обладнання
                                     </button>
                                 </div>
                             )}
@@ -129,8 +102,9 @@
                             {step === 1 && (
                                 <div className="space-y-4 animate-in">
                                     <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800 uppercase text-sm tracking-wider">
-                                        <Icon name="beaker" /> 1. Обладнання
+                                        <Icon name="beaker" /> 1. Лабораторний стіл
                                     </h2>
+                                    <p className="text-xs text-slate-500 italic">Оберіть прилади, необхідні для експерименту та точних замірів:</p>
                                     <div className="grid grid-cols-1 gap-2">
                                         {tools.map(tool => (
                                             <button key={tool.id} onClick={() => toggleTool(tool)} className={`p-3.5 rounded-lg border-2 text-left transition-all text-xs sm:text-sm font-medium ${selectedTools.includes(tool.id) ? 'border-blue-500 bg-blue-50 text-blue-800' : 'border-slate-100 bg-white text-slate-700'}`}>
@@ -138,33 +112,38 @@
                                             </button>
                                         ))}
                                     </div>
-                                    <div className="flex gap-2 pt-2">
-                                        <button onClick={() => setStep(0)} className="flex-1 border border-slate-200 py-3 rounded-xl text-sm font-semibold text-slate-500">Назад</button>
-                                        <button disabled={selectedTools.length < 3} onClick={() => setStep(2)} className="flex-[2] bg-blue-600 text-white py-3 rounded-xl font-bold disabled:opacity-50">Далі</button>
-                                    </div>
+                                    <button disabled={!selectedTools.includes('ruler')} onClick={() => setStep(2)} className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold disabled:opacity-50">
+                                        {!selectedTools.includes('ruler') ? 'Забудьте лінійку — не зможете порівняти!' : 'До вимірювань'}
+                                    </button>
                                 </div>
                             )}
 
                             {step === 2 && (
                                 <div className="space-y-4 animate-in">
                                     <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800 uppercase text-sm tracking-wider">
-                                        <Icon name="droplets" /> 2. Одна рідина
+                                        <Icon name="droplets" /> 2. Однорідна рідина
                                     </h2>
-                                    <div className="p-3 bg-blue-50 rounded-lg text-xs text-blue-800">Наливаємо <strong>підфарбовану воду</strong>. Що бачимо?</div>
+                                    <div className="p-4 bg-slate-100 rounded-lg flex flex-col items-center">
+                                        <div className="flex gap-10 items-end h-32 border-b-4 border-slate-400 px-10 relative">
+                                            <div className="w-8 bg-blue-400/80 h-20 rounded-t-sm transition-all duration-1000"></div>
+                                            <div className="w-16 bg-blue-400/80 h-20 rounded-t-lg transition-all duration-1000"></div>
+                                            <div className="w-4 bg-blue-400/80 h-20 rounded-t-full transition-all duration-1000"></div>
+                                            <div className="absolute top-10 w-full h-px bg-blue-600/30 border-dashed border-t"></div>
+                                        </div>
+                                        <p className="mt-4 text-center text-xs font-medium text-slate-600">Наливаємо воду. Що бачимо?</p>
+                                    </div>
                                     <div className="space-y-2">
-                                        {observationSteps.map(obs => (
-                                            <button key={obs.id} onClick={() => toggleObservation(obs.id)} className={`w-full p-4 rounded-lg border-2 text-left flex items-center gap-3 transition-all ${observations.includes(obs.id) ? 'border-green-500 bg-green-50 shadow-sm' : 'border-slate-100 bg-white'}`}>
-                                                <div className={`h-5 w-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${observations.includes(obs.id) ? 'bg-green-500 border-green-500' : 'border-slate-200'}`}>
-                                                    {observations.includes(obs.id) && <Icon name="check" />}
-                                                </div>
-                                                <span className="text-xs sm:text-sm text-slate-700">{obs.text}</span>
+                                        {[
+                                            {id: 'l1', text: 'У всіх колінах встановлюється однаковий рівень.'},
+                                            {id: 'l2', text: 'Форма посудин не впливає на висоту стовпа рідини.'}
+                                        ].map(obs => (
+                                            <button key={obs.id} onClick={() => toggleObservation(obs.id)} className={`w-full p-3 rounded-lg border flex items-center gap-3 text-xs sm:text-sm ${observations.includes(obs.id) ? 'border-green-500 bg-green-50 text-green-700' : 'border-slate-200'}`}>
+                                                <div className={`w-4 h-4 border rounded-full ${observations.includes(obs.id) ? 'bg-green-500' : ''}`}></div>
+                                                {obs.text}
                                             </button>
                                         ))}
                                     </div>
-                                    <div className="flex gap-2 pt-2">
-                                        <button onClick={() => setStep(1)} className="flex-1 border border-slate-200 py-3 rounded-xl text-sm font-semibold text-slate-500">Назад</button>
-                                        <button disabled={observations.length === 0} onClick={() => setStep(3)} className="flex-[2] bg-blue-600 text-white py-3 rounded-xl font-bold">Далі</button>
-                                    </div>
+                                    <button disabled={observations.length < 2} onClick={() => setStep(3)} className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold disabled:opacity-50 tracking-wide">Дослідити олію та воду</button>
                                 </div>
                             )}
 
@@ -173,56 +152,71 @@
                                     <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800 uppercase text-sm tracking-wider">
                                         <Icon name="waves" /> 3. Різні рідини
                                     </h2>
-                                    <div className="p-3 bg-orange-50 rounded-lg text-xs text-orange-800">В одному коліні — вода, в іншому — олія. Результат:</div>
-                                    <div className="grid grid-cols-1 gap-2">
-                                        {[
-                                            { id: 'diff', text: 'Висота стовпа олії більша за висоту води, бо олія має меншу густину.', correct: true },
-                                            { id: 'same', text: 'Висоти обох рідин однакові.', correct: false },
-                                            { id: 'less', text: 'Стовп олії нижчий за стовп води.', correct: false }
-                                        ].map(item => (
-                                            <button key={item.id} onClick={() => setSecondPropertyObs(item)} className={`p-4 rounded-lg border-2 text-left text-xs sm:text-sm transition-all ${secondPropertyObs?.id === item.id ? (item.correct ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50') : 'border-slate-100 bg-white'}`}>
-                                                {item.text}
+                                    <div className="p-4 bg-slate-100 rounded-lg flex flex-col items-center relative overflow-hidden">
+                                        <div className="flex gap-16 items-end h-40 border-b-4 border-slate-400 px-10 relative">
+                                            {/* Water Column */}
+                                            <div className="w-12 bg-blue-500 h-24 rounded-t relative">
+                                                <div className="absolute -top-6 left-0 right-0 text-center text-[10px] font-bold">h₁ (вода)</div>
+                                            </div>
+                                            {/* Oil Column */}
+                                            <div className="w-12 bg-yellow-400 h-32 rounded-t relative">
+                                                <div className="absolute -top-6 left-0 right-0 text-center text-[10px] font-bold">h₂ (олія)</div>
+                                            </div>
+                                        </div>
+                                        
+                                        {!measured ? (
+                                            <button onClick={() => setMeasured(true)} className="mt-4 bg-slate-800 text-white px-4 py-2 rounded-lg text-xs flex items-center gap-2 animate-bounce">
+                                                <Icon name="ruler" /> Виміряти висоти лінійкою
                                             </button>
-                                        ))}
+                                        ) : (
+                                            <div className="mt-4 p-2 bg-white rounded border border-slate-300 text-[11px] font-mono">
+                                                Результат: h₂ (олія) > h₁ (вода)
+                                            </div>
+                                        )}
                                     </div>
-                                    <div className="flex gap-2 pt-2">
-                                        <button onClick={() => setStep(2)} className="flex-1 border border-slate-200 py-3 rounded-xl text-sm font-semibold text-slate-500">Назад</button>
-                                        <button disabled={!secondPropertyObs} onClick={() => setStep(4)} className="flex-[2] bg-blue-600 text-white py-3 rounded-xl font-bold">Готово</button>
-                                    </div>
+
+                                    {measured && (
+                                        <div className="grid grid-cols-1 gap-2">
+                                            {[
+                                                { id: 'diff', text: 'Висота стовпа рідини з меншою густиною (олії) є більшою.', correct: true },
+                                                { id: 'math', text: 'Висоти стовпів рідин обернено пропорційні до їхніх густин.', correct: true }
+                                            ].map(item => (
+                                                <button key={item.id} onClick={() => setSecondPropertyObs(item)} className={`p-4 rounded-lg border-2 text-left text-xs sm:text-sm transition-all ${secondPropertyObs?.id === item.id ? 'border-blue-500 bg-blue-50' : 'border-slate-100'}`}>
+                                                    {item.text}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                    <button disabled={!secondPropertyObs} onClick={() => setStep(4)} className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">Сформувати звіт</button>
                                 </div>
                             )}
 
                             {step === 4 && (
                                 <div className="space-y-4 animate-in">
                                     <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800 uppercase text-sm tracking-wider">
-                                        <Icon name="pen" /> Твій звіт
+                                        <Icon name="pen" /> Лабораторний журнал
                                     </h2>
-                                    <div className="p-5 bg-white border border-slate-200 rounded-xl font-serif text-slate-800 text-xs sm:text-sm leading-relaxed shadow-inner">
-                                        <h3 className="text-center font-bold mb-4 underline uppercase text-blue-900">Властивості сполучених посудин</h3>
-                                        <p className="mb-2"><strong>Обладнання:</strong> {selectedTools.map(id => tools.find(t => t.id === id).name).join(', ')}.</p>
-                                        <p className="font-bold italic mb-1 uppercase text-[10px]">Дослідження:</p>
-                                        <ol className="list-decimal ml-4 mb-4 space-y-2">
-                                            <li>З водою: {observations.length > 0 ? observations.map(id => observationSteps.find(o => o.id === id).text.toLowerCase()).join(' ') : '...'}</li>
-                                            <li>З олією: {secondPropertyObs?.correct ? 'висота стовпа олії більша за висоту води.' : '...'}</li>
-                                        </ol>
-                                        <div className="border-t pt-3">
-                                            <p className="font-bold">Висновок:</p>
-                                            <p>1. Однорідна рідина — рівні однакові.</p>
-                                            <p>2. Різні рідини — менша густина = більша висота.</p>
-                                        </div>
+                                    <div className="p-6 bg-white border-2 border-slate-200 rounded-xl font-serif text-slate-800 text-xs sm:text-sm shadow-inner leading-relaxed">
+                                        <p className="mb-2 italic text-slate-500">Висновок за результатами вимірювань:</p>
+                                        <ul className="space-y-3">
+                                            <li className="flex gap-2">
+                                                <span className="font-bold">1.</span>
+                                                У сполучених посудинах будь-якої форми поверхні однорідної рідини встановлюються на <strong>однаковому рівні</strong>.
+                                            </li>
+                                            <li className="flex gap-2">
+                                                <span className="font-bold">2.</span>
+                                                При наливанні різних рідин висоти стовпів над рівнем поділу <strong>обернено пропорційні</strong> до їхніх густин: 
+                                                <div className="text-center my-2 font-bold p-2 bg-slate-50 rounded">h₁/h₂ = ρ₂/ρ₁</div>
+                                            </li>
+                                        </ul>
+                                        <p className="mt-4 text-[10px] text-slate-400 uppercase">Лінійка підтвердила: чим менша густина рідини, тим вищий її стовп.</p>
                                     </div>
-                                    <div className="flex items-center justify-between pt-2">
-                                        <div className="text-blue-700 font-bold text-sm">Оцінка: {getGrade()}</div>
-                                        <button onClick={handleReset} className="flex items-center gap-2 bg-slate-100 px-4 py-2 rounded-lg text-slate-600 text-xs font-bold">
-                                            <Icon name="refresh" /> Спочатку
-                                        </button>
-                                    </div>
+                                    <button onClick={handleReset} className="w-full flex items-center justify-center gap-2 bg-slate-100 py-3 rounded-xl text-slate-600 text-xs font-bold hover:bg-slate-200 transition-colors">
+                                        <Icon name="refresh" /> Повторити експеримент
+                                    </button>
                                 </div>
                             )}
                         </div>
-                    </div>
-                    <div className="max-w-xl mx-auto mt-4 text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-                        Фізика 7 клас • Інтерактивний модуль
                     </div>
                 </div>
             );
