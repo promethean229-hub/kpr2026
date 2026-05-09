@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Підготовка до КПідКР</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .task-card-active:active {
+            transform: scale(0.96);
+            transition: transform 0.1s;
+        }
+        /* Видалення будь-якого автоматичного курсиву */
+        * { font-style: normal !important; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen pb-12">
+
+    <header class="bg-blue-700 text-white pt-10 pb-12 px-6 rounded-b-[2.5rem] shadow-lg mb-8">
+        <div class="max-w-md mx-auto text-center">
+            <h1 class="text-xl font-bold leading-tight">
+                Підготовка до комплексної підсумкової контрольної роботи (ІІ семестр)
+            </h1>
+        </div>
+    </header>
+
+    <main class="max-w-md mx-auto px-4">
+        
+        <section class="mb-10">
+            <h2 class="text-lg font-bold mb-5 flex items-center gap-2 px-1">
+                <span class="w-1.5 h-6 bg-blue-700 rounded-full"></span>
+                Галузеві критерії оцінювання
+            </h2>
+            <div class="grid gap-3">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-start gap-4">
+                    <div class="bg-amber-100 text-amber-600 p-3 rounded-xl shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-1">Знання та розуміння</h3>
+                        <p class="text-xs text-slate-500 leading-relaxed">Теоретична база та основні терміни навчального курсу.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-start gap-4">
+                    <div class="bg-emerald-100 text-emerald-600 p-3 rounded-xl shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-1">Практичні навички</h3>
+                        <p class="text-xs text-slate-500 leading-relaxed">Виконання практичних операцій та робота з інструментами.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-start gap-4">
+                    <div class="bg-purple-100 text-purple-600 p-3 rounded-xl shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-1">Аналіз та висновки</h3>
+                        <p class="text-xs text-slate-500 leading-relaxed">Здатність обґрунтовувати рішення та оцінювати результати.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="text-lg font-bold mb-5 flex items-center gap-2 px-1">
+                <span class="w-1.5 h-6 bg-blue-700 rounded-full"></span>
+                Список завдань
+            </h2>
+            <div class="grid grid-cols-2 gap-4" id="tasks-container">
+                <!-- Завдання генеруються через JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="mt-12 text-center text-slate-400 text-[10px] px-4 uppercase tracking-widest">
+        <p>© 2026 Онлайн-кабінет 229</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('tasks-container');
+            
+            /**
+             * НАЛАШТУВАННЯ:
+             * Змініть це число (від 0 до 16), щоб активувати завдання.
+             * Наприклад: 0 - всі сірі, 5 - перші п'ять активні (чорні).
+             */
+            const attachedTasksCount = 0; 
+            
+            for (let i = 1; i <= 16; i++) {
+                const isActive = i <= attachedTasksCount;
+                let card;
+
+                if (isActive) {
+                    // Активний стан: Чорний текст, білий фон, робоче посилання
+                    card = document.createElement('a');
+                    card.href = `task${i}.html`;
+                    card.className = 'task-card-active bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col items-center justify-center text-center hover:border-blue-300 hover:shadow-md transition-all active:bg-blue-50';
+                } else {
+                    // Неактивний стан: Сірий колір, без посилання
+                    card = document.createElement('div');
+                    card.className = 'bg-slate-100 p-5 rounded-2xl border border-slate-200 flex flex-col items-center justify-center text-center opacity-50 grayscale';
+                }
+                
+                const stepColor = isActive ? 'text-blue-600' : 'text-slate-400';
+                const textColor = isActive ? 'text-slate-900' : 'text-slate-400';
+
+                card.innerHTML = `
+                    <span class="text-[10px] uppercase tracking-wider font-bold mb-1 ${stepColor}">Крок ${i}</span>
+                    <span class="font-bold text-sm ${textColor}">Завдання ${i}</span>
+                `;
+                
+                container.appendChild(card);
+            }
+        });
+    </script>
+
+</body>
+</html>
