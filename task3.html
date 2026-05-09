@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Підготовка до опису дослідження</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; touch-action: manipulation; }
+        .step-content { display: none; }
+        .step-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .progress-bar { transition: width 0.4s ease; }
+        .math-font { font-family: "Times New Roman", Times, serif; font-style: italic; }
+        .correct-selection { background-color: #dcfce7 !important; border-color: #22c55e !important; color: #166534 !important; }
+        .wrong-selection { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b !important; }
+        .notebook-line { border-bottom: 1px solid #e2e8f0; min-height: 1.5rem; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-blue-600 text-white p-4 sticky top-0 z-10 shadow-md">
+        <h1 class="text-lg font-bold text-center">Дослідження пружності (Challenge)</h1>
+        <div class="w-full bg-blue-800 h-2 mt-3 rounded-full overflow-hidden">
+            <div id="progress" class="progress-bar bg-yellow-400 h-full" style="width: 20%"></div>
+        </div>
+    </header>
+
+    <main class="flex-grow p-4 md:max-w-md mx-auto w-full pb-20">
+        
+        <!-- Step 1: Equipment Choice -->
+        <div id="step1" class="step-content active">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                <h2 class="text-xl font-bold mb-4 text-blue-700">1. Відбір інструментів</h2>
+                <p class="text-sm text-slate-600 mb-4 font-semibold">Обери ТІЛЬКИ те, що дозволить розрахувати жорсткість:</p>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="toggleChoice(this, 'correct')" class="p-4 border-2 border-slate-200 rounded-xl text-sm flex flex-col items-center gap-2 transition-all active:scale-95"><span class="text-2xl">📏</span> Лінійка</button>
+                    <button onclick="toggleChoice(this, 'correct')" class="p-4 border-2 border-slate-200 rounded-xl text-sm flex flex-col items-center gap-2 transition-all active:scale-95"><span class="text-2xl">🧶</span> Шнур</button>
+                    <button onclick="toggleChoice(this, 'wrong')" class="p-4 border-2 border-slate-200 rounded-xl text-sm flex flex-col items-center gap-2 transition-all active:scale-95"><span class="text-2xl">⏱️</span> Секундомір</button>
+                    <button onclick="toggleChoice(this, 'correct')" class="p-4 border-2 border-slate-200 rounded-xl text-sm flex flex-col items-center gap-2 transition-all active:scale-95"><span class="text-2xl">⚖️</span> Тягарці</button>
+                    <button onclick="toggleChoice(this, 'wrong')" class="p-4 border-2 border-slate-200 rounded-xl text-sm flex flex-col items-center gap-2 transition-all active:scale-95"><span class="text-2xl">🔦</span> Ліхтарик</button>
+                    <button onclick="toggleChoice(this, 'correct')" class="p-4 border-2 border-slate-200 rounded-xl text-sm flex flex-col items-center gap-2 transition-all active:scale-95"><span class="text-2xl">🏗️</span> Штатив</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Formula Logic -->
+        <div id="step2" class="step-content">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                <h2 class="text-xl font-bold mb-4 text-blue-700">2. Аналіз величин</h2>
+                <p class="text-sm text-slate-600 mb-6 text-center">Побудуй формулу жорсткості:</p>
+                <div class="flex flex-col items-center gap-6">
+                    <div class="flex items-center gap-2 select-none">
+                        <span class="math-font text-4xl">k = </span>
+                        <div class="flex flex-col items-center min-w-[60px]">
+                            <div id="numerator" class="math-font text-3xl border-b-2 border-slate-900 pb-1 px-4">?</div>
+                            <div id="denominator" class="math-font text-3xl pt-1 px-4">?</div>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="setPart('F')" class="px-4 py-2 bg-slate-100 border rounded-lg math-font font-bold">F<sub>пр</sub></button>
+                        <button onclick="setPart('x')" class="px-4 py-2 bg-slate-100 border rounded-lg math-font font-bold">x</button>
+                        <button onclick="setPart('m')" class="px-4 py-2 bg-slate-100 border rounded-lg math-font font-bold">m</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Experiment Design -->
+        <div id="step3" class="step-content">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                <h2 class="text-xl font-bold mb-4 text-blue-700">3. Проєктування досліду</h2>
+                <div class="space-y-4 text-sm">
+                    <div class="p-4 bg-slate-50 rounded-xl border border-dashed">
+                        <p class="font-bold mb-2">Гіпотеза: "Чи залежить k від x?"</p>
+                        <button onclick="selectStrategy(this, 1, 'B')" class="w-full text-left p-3 mb-2 border rounded bg-white">Міняти силу на одному шнурі</button>
+                        <button onclick="selectStrategy(this, 1, 'A')" class="w-full text-left p-3 border rounded bg-white">Брати шнури різної довжини</button>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-dashed">
+                        <p class="font-bold mb-2">Гіпотеза: "Чи залежить k від L?"</p>
+                        <button onclick="selectStrategy(this, 2, 'A')" class="w-full text-left p-3 mb-2 border rounded bg-white">Порівняти цілий шнур і його половину</button>
+                        <button onclick="selectStrategy(this, 2, 'B')" class="w-full text-left p-3 border rounded bg-white">Взяти шнури з різної гуми</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Logic Check -->
+        <div id="step4" class="step-content">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                <h2 class="text-xl font-bold mb-4 text-blue-700 text-center">4. Фінальний висновок</h2>
+                <p class="text-sm text-slate-600 mb-6">Як зміниться жорсткість, якщо скласти шнур вдвоє?</p>
+                <div class="grid grid-cols-1 gap-3">
+                    <button onclick="finalAnswer(this, 'inc')" class="p-4 border-2 rounded-xl text-sm text-left">Збільшиться (в 2 рази)</button>
+                    <button onclick="finalAnswer(this, 'dec')" class="p-4 border-2 rounded-xl text-sm text-left">Зменшиться</button>
+                    <button onclick="finalAnswer(this, 'none')" class="p-4 border-2 rounded-xl text-sm text-left">Не зміниться</button>
+                </div>
+                <div id="explanation-box" class="hidden mt-4 p-4 bg-blue-50 border border-blue-200 rounded-xl text-xs">
+                    <strong>Факт:</strong> Жорсткість обернено пропорційна довжині. Коротше тіло — важче розтягнути.
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 5: Final Notebook View -->
+        <div id="step5" class="step-content">
+            <div class="bg-amber-50 rounded-2xl p-6 shadow-inner border border-amber-200 relative">
+                <div class="absolute -top-3 -right-3 bg-red-500 text-white text-[10px] px-2 py-1 rounded-full uppercase font-black">Перепиши в зошит!</div>
+                <h2 class="text-xl font-bold mb-4 text-blue-900 border-b-2 border-blue-200 pb-2">📒 Конспект відповіді</h2>
+                
+                <div class="space-y-4 text-sm text-blue-900">
+                    <div>
+                        <p class="font-bold">🛠 Обладнання:</p>
+                        <p class="italic ml-2">Штатив, гумовий шнур, тягарці, лінійка.</p>
+                    </div>
+                    <div>
+                        <p class="font-bold">📐 Формула:</p>
+                        <p class="ml-2"><span class="math-font">k = F<sub>пр</sub> / x</span>, де <span class="math-font">x = l - l<sub>0</sub></span>.</p>
+                    </div>
+                    <div>
+                        <p class="font-bold">🧪 Хід роботи:</p>
+                        <ol class="list-decimal ml-5 space-y-1">
+                            <li>Вимірюю <span class="math-font">k</span> при різній кількості тягарців. <span class="font-semibold">(k не змінюється)</span>.</li>
+                            <li>Вимірюю <span class="math-font">k</span> для шнура довжиною <span class="math-font">L</span> та <span class="math-font">L/2</span>. <span class="font-semibold">(k зростає при зменшенні L)</span>.</li>
+                        </ol>
+                    </div>
+                    <div class="mt-4 p-3 bg-white/50 border border-amber-300 rounded-lg">
+                        <p class="font-bold text-center uppercase text-xs text-amber-700">Висновок:</p>
+                        <p class="text-xs text-center">Жорсткість шнура залежить від його початкової довжини та матеріалу, але не залежить від сили розтягу.</p>
+                    </div>
+                </div>
+
+                <button onclick="location.reload()" class="w-full mt-6 py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg">Готово (Закінчити)</button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Navigation -->
+    <footer class="p-4 bg-white border-t border-slate-200 fixed bottom-0 left-0 right-0 z-20">
+        <div class="flex gap-4 max-w-md mx-auto">
+            <button id="prevBtn" onclick="changeStep(-1)" class="flex-1 border-2 border-slate-200 text-slate-500 py-3 rounded-xl font-bold hidden">Назад</button>
+            <button id="nextBtn" onclick="changeStep(1)" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg">Далі</button>
+        </div>
+    </footer>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 5;
+        let selectedFormula = { num: null, den: null };
+
+        function toggleChoice(btn, type) {
+            btn.classList.toggle(type === 'correct' ? 'correct-selection' : 'wrong-selection');
+            if(type === 'wrong') showMessage("Це зайве. Подумай!");
+        }
+
+        function setPart(val) {
+            const num = document.getElementById('numerator');
+            const den = document.getElementById('denominator');
+            if (num.innerText === '?') {
+                num.innerText = (val === 'F' ? 'Fпр' : val);
+                selectedFormula.num = val;
+            } else if (den.innerText === '?') {
+                den.innerText = val;
+                selectedFormula.den = val;
+                if(selectedFormula.num === 'F' && selectedFormula.den === 'x') {
+                    num.classList.add('text-green-600');
+                    den.classList.add('text-green-600');
+                    showMessage("Формула правильна!");
+                } else {
+                    showMessage("Помилка у формулі.");
+                    setTimeout(() => { num.innerText = '?'; den.innerText = '?'; }, 1000);
+                }
+            } else {
+                num.innerText = '?'; den.innerText = '?';
+            }
+        }
+
+        function selectStrategy(btn, hyp, choice) {
+            const container = btn.parentElement;
+            container.querySelectorAll('button').forEach(b => b.classList.remove('correct-selection', 'wrong-selection'));
+            if ((hyp === 1 && choice === 'B') || (hyp === 2 && choice === 'A')) {
+                btn.classList.add('correct-selection');
+                showMessage("Вірно!");
+            } else {
+                btn.classList.add('wrong-selection');
+                showMessage("Не зовсім.");
+            }
+        }
+
+        function finalAnswer(btn, answer) {
+            document.getElementById('explanation-box').classList.remove('hidden');
+            btn.classList.add(answer === 'inc' ? 'correct-selection' : 'wrong-selection');
+            showMessage(answer === 'inc' ? "Браво!" : "Читай пояснення.");
+        }
+
+        function changeStep(delta) {
+            const newStep = currentStep + delta;
+            if (newStep >= 1 && newStep <= totalSteps) {
+                document.getElementById(`step${currentStep}`).classList.remove('active');
+                currentStep = newStep;
+                document.getElementById(`step${currentStep}`).classList.add('active');
+                updateUI();
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('progress').style.width = `${(currentStep / totalSteps) * 100}%`;
+            document.getElementById('prevBtn').style.display = currentStep === 1 || currentStep === 5 ? 'none' : 'block';
+            document.getElementById('nextBtn').style.display = currentStep === 5 ? 'none' : 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function showMessage(text) {
+            const msg = document.createElement('div');
+            msg.className = "fixed bottom-24 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-4 py-2 rounded-full text-xs z-50";
+            msg.innerText = text;
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 2000);
+        }
+    </script>
+</body>
+</html>
