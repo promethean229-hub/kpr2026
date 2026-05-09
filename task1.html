@@ -81,4 +81,155 @@
             };
 
             const getGrade = () => {
-                const correctToolsCount = selectedTools.filter(
+                const correctToolsCount = selectedTools.filter(id => tools.find(t => t.id === id && t.correct)).length;
+                const score = (correctToolsCount * 1.5) + (observations.length * 2) + (secondPropertyObs?.correct ? 3 : 0);
+                if (score >= 12) return "Відмінно!";
+                if (score >= 8) return "Добре";
+                return "Спробуй ще";
+            };
+
+            return (
+                <div className="min-h-screen bg-slate-50 p-2 sm:p-4 md:p-8 font-sans">
+                    <div className="max-w-xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200">
+                        
+                        <div className="bg-blue-700 px-6 py-5 text-white shadow-sm">
+                            <h1 className="text-center font-bold text-lg sm:text-xl leading-tight uppercase tracking-wide">
+                                Дослідження властивостей сполучених посудин
+                            </h1>
+                        </div>
+
+                        <div className="flex justify-between px-6 py-4 bg-slate-50 border-b border-slate-100">
+                            {[0, 1, 2, 3, 4].map((i) => (
+                                <div key={i} className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${step >= i ? 'bg-blue-600 scale-125' : 'bg-slate-200'}`} />
+                            ))}
+                        </div>
+
+                        <div className="p-4 sm:p-6">
+                            {step === 0 && (
+                                <div className="space-y-4 animate-in">
+                                    <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800 uppercase text-sm tracking-wider">
+                                        <Icon name="book" /> Вступ
+                                    </h2>
+                                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 text-sm leading-relaxed text-slate-700">
+                                        <strong>Сполучені посудини</strong> — це посудини, з'єднані між собою так, що рідина вільно перетікає між ними.
+                                    </div>
+                                    <div className="grid grid-cols-1 gap-2">
+                                        {examples.map(ex => (
+                                            <div key={ex.name} className="p-3 border border-slate-100 rounded-lg bg-slate-50 text-sm">
+                                                <span className="font-bold text-blue-800">{ex.name}</span> — {ex.desc}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <button onClick={() => setStep(1)} className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 active:scale-95 transition-all shadow-md mt-2">
+                                        Почати дослідження
+                                    </button>
+                                </div>
+                            )}
+
+                            {step === 1 && (
+                                <div className="space-y-4 animate-in">
+                                    <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800 uppercase text-sm tracking-wider">
+                                        <Icon name="beaker" /> 1. Обладнання
+                                    </h2>
+                                    <div className="grid grid-cols-1 gap-2">
+                                        {tools.map(tool => (
+                                            <button key={tool.id} onClick={() => toggleTool(tool)} className={`p-3.5 rounded-lg border-2 text-left transition-all text-xs sm:text-sm font-medium ${selectedTools.includes(tool.id) ? 'border-blue-500 bg-blue-50 text-blue-800' : 'border-slate-100 bg-white text-slate-700'}`}>
+                                                {tool.name}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <div className="flex gap-2 pt-2">
+                                        <button onClick={() => setStep(0)} className="flex-1 border border-slate-200 py-3 rounded-xl text-sm font-semibold text-slate-500">Назад</button>
+                                        <button disabled={selectedTools.length < 3} onClick={() => setStep(2)} className="flex-[2] bg-blue-600 text-white py-3 rounded-xl font-bold disabled:opacity-50">Далі</button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {step === 2 && (
+                                <div className="space-y-4 animate-in">
+                                    <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800 uppercase text-sm tracking-wider">
+                                        <Icon name="droplets" /> 2. Одна рідина
+                                    </h2>
+                                    <div className="p-3 bg-blue-50 rounded-lg text-xs text-blue-800">Наливаємо <strong>підфарбовану воду</strong>. Що бачимо?</div>
+                                    <div className="space-y-2">
+                                        {observationSteps.map(obs => (
+                                            <button key={obs.id} onClick={() => toggleObservation(obs.id)} className={`w-full p-4 rounded-lg border-2 text-left flex items-center gap-3 transition-all ${observations.includes(obs.id) ? 'border-green-500 bg-green-50 shadow-sm' : 'border-slate-100 bg-white'}`}>
+                                                <div className={`h-5 w-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${observations.includes(obs.id) ? 'bg-green-500 border-green-500' : 'border-slate-200'}`}>
+                                                    {observations.includes(obs.id) && <Icon name="check" />}
+                                                </div>
+                                                <span className="text-xs sm:text-sm text-slate-700">{obs.text}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <div className="flex gap-2 pt-2">
+                                        <button onClick={() => setStep(1)} className="flex-1 border border-slate-200 py-3 rounded-xl text-sm font-semibold text-slate-500">Назад</button>
+                                        <button disabled={observations.length === 0} onClick={() => setStep(3)} className="flex-[2] bg-blue-600 text-white py-3 rounded-xl font-bold">Далі</button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {step === 3 && (
+                                <div className="space-y-4 animate-in">
+                                    <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800 uppercase text-sm tracking-wider">
+                                        <Icon name="waves" /> 3. Різні рідини
+                                    </h2>
+                                    <div className="p-3 bg-orange-50 rounded-lg text-xs text-orange-800">В одному коліні — вода, в іншому — олія. Результат:</div>
+                                    <div className="grid grid-cols-1 gap-2">
+                                        {[
+                                            { id: 'diff', text: 'Висота стовпа олії більша за висоту води, бо олія має меншу густину.', correct: true },
+                                            { id: 'same', text: 'Висоти обох рідин однакові.', correct: false },
+                                            { id: 'less', text: 'Стовп олії нижчий за стовп води.', correct: false }
+                                        ].map(item => (
+                                            <button key={item.id} onClick={() => setSecondPropertyObs(item)} className={`p-4 rounded-lg border-2 text-left text-xs sm:text-sm transition-all ${secondPropertyObs?.id === item.id ? (item.correct ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50') : 'border-slate-100 bg-white'}`}>
+                                                {item.text}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <div className="flex gap-2 pt-2">
+                                        <button onClick={() => setStep(2)} className="flex-1 border border-slate-200 py-3 rounded-xl text-sm font-semibold text-slate-500">Назад</button>
+                                        <button disabled={!secondPropertyObs} onClick={() => setStep(4)} className="flex-[2] bg-blue-600 text-white py-3 rounded-xl font-bold">Готово</button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {step === 4 && (
+                                <div className="space-y-4 animate-in">
+                                    <h2 className="text-lg font-bold flex items-center gap-2 text-slate-800 uppercase text-sm tracking-wider">
+                                        <Icon name="pen" /> Твій звіт
+                                    </h2>
+                                    <div className="p-5 bg-white border border-slate-200 rounded-xl font-serif text-slate-800 text-xs sm:text-sm leading-relaxed shadow-inner">
+                                        <h3 className="text-center font-bold mb-4 underline uppercase text-blue-900">Властивості сполучених посудин</h3>
+                                        <p className="mb-2"><strong>Обладнання:</strong> {selectedTools.map(id => tools.find(t => t.id === id).name).join(', ')}.</p>
+                                        <p className="font-bold italic mb-1 uppercase text-[10px]">Дослідження:</p>
+                                        <ol className="list-decimal ml-4 mb-4 space-y-2">
+                                            <li>З водою: {observations.length > 0 ? observations.map(id => observationSteps.find(o => o.id === id).text.toLowerCase()).join(' ') : '...'}</li>
+                                            <li>З олією: {secondPropertyObs?.correct ? 'висота стовпа олії більша за висоту води.' : '...'}</li>
+                                        </ol>
+                                        <div className="border-t pt-3">
+                                            <p className="font-bold">Висновок:</p>
+                                            <p>1. Однорідна рідина — рівні однакові.</p>
+                                            <p>2. Різні рідини — менша густина = більша висота.</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between pt-2">
+                                        <div className="text-blue-700 font-bold text-sm">Оцінка: {getGrade()}</div>
+                                        <button onClick={handleReset} className="flex items-center gap-2 bg-slate-100 px-4 py-2 rounded-lg text-slate-600 text-xs font-bold">
+                                            <Icon name="refresh" /> Спочатку
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    <div className="max-w-xl mx-auto mt-4 text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                        Фізика 7 клас • Інтерактивний модуль
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
